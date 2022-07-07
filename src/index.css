@@ -1,13 +1,23 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.spin-container{
+  position: relative;
+  width: 19.5rem;
+  height: 19.5rem;
+}
+.spin-txt{
+  position: absolute;
+  top: 2rem;
+  width: 12rem;
+  transform: rotate(-38deg);
+}
+#spin-wheel{
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+
+.positionMe{
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
 }

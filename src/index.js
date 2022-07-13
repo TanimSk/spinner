@@ -9,11 +9,14 @@ class SpinnerWheel extends React.Component {
   constructor() {
     super();
 
-    this.segments = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-      22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-      41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56 ,57, 58, 59, 60
-    ];
+    this.segments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+      18, 19, 20, 21, 22, 23, 24, 25, 26];
+
+    this.data = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
+    this.size = 265;
+    this.total_segments = 20;
 
     // Array operations. Don't Modify
     this.array_trace = 0;
@@ -23,8 +26,9 @@ class SpinnerWheel extends React.Component {
     this.spinner_txt_tracer = 20;
   }
 
-  isClicked = (e, arg) => {
-    alert(arg);
+
+  isClicked = (data) => {
+    console.log(data);
   }
 
   handleMouseOver = (e, data) => {
@@ -51,8 +55,6 @@ class SpinnerWheel extends React.Component {
 
     const txt_size = 16;
     const offset = 80;
-    this.size = 265;
-    this.total_segments = 20;
 
     const colors = [
       '#76C695',
@@ -93,17 +95,17 @@ class SpinnerWheel extends React.Component {
     this.angle = Math.PI * 2 / this.total_segments;
 
     let angle_degree = 360 / this.total_segments;
-    let s = [];
+    this.s = [];
     this.text_obj = [];
 
     // draw a wheel
     for (let i = 0; i < this.total_segments; i++) {
-      s[i] = new Shape();
-      s[i].graphics.f(colors[i]).mt(0, 0)
+      this.s[i] = new Shape();
+      this.s[i].graphics.f(colors[i]).mt(0, 0)
         .lt(Math.cos(this.angle * i) * this.size, Math.sin(this.angle * i) * this.size)
         .arc(0, 0, this.size, i * this.angle, i * this.angle + this.angle)
         .lt(0, 0);
-      this.c.addChildAt(s[i], 0);
+      this.c.addChildAt(this.s[i], 0);
 
       // Adding pseudo texts, then update via reference ;)
       let new_cont = new Container();
@@ -114,24 +116,23 @@ class SpinnerWheel extends React.Component {
       this.c.addChild(new_cont);
 
       // Event Liseteners
-      s[i].on(
-        'click', (e) => {
-          this.isClicked(e, "your return msg")                       /***********  PASS ARGUMENT HERE!  ***********/
-        }
-      );
-      s[i].on('mouseover', (e, data) => {
+      this.s[i].on('mouseover', (e, data) => {
         this.handleMouseOver(e, data);
-      }, null, false, { index: i, shape_data: s[i] });
-      s[i].on('mouseout', (e, data) => {
+      }, null, false, { index: i, shape_data: this.s[i] });
+      this.s[i].on('mouseout', (e, data) => {
         this.handleMouseOut(e, data);
-      }, null, false, { index: i, shape_data: s[i], color: colors[i] });
+      }, null, false, { index: i, shape_data: this.s[i], color: colors[i] });
     }
 
 
     // Init text on segments 5
-    let segment_new = this.get_array();
+    let [segment_new, new_data] = this.get_array();
     for (let i = this.get_init; i > 0; i--) {
       this.text_obj[i - 1].text = segment_new[this.get_init - i];
+      this.s[this.total_segments - i].on('click', (e, data) => {                                      /*click event listener*/
+        this.isClicked(data.info);
+      }, null, false, { info: new_data[4 - this.get_init + i] }
+      );
     }
 
 
@@ -149,13 +150,31 @@ class SpinnerWheel extends React.Component {
 
 
   rotate_wheel = () => {
+
     // Update text by adding two elements to segment
-    let segment_new = this.get_array();
+    let [segment_new, new_data] = this.get_array();
     for (let i = this.spinner_txt_tracer; i > this.spinner_txt_tracer - 2; i--) {
-      this.text_obj[i-1].text = segment_new[this.spinner_txt_tracer-i];
+      this.text_obj[i - 1].text = segment_new[this.spinner_txt_tracer - i];
+
+      if (i < 6) {
+        this.s[i - this.get_init + 19].on('click', (e, data) => {                                      /*click event listener*/
+          this.isClicked(data.info);
+        }, null, false, { info: new_data[this.spinner_txt_tracer - i] }
+        );
+        console.log(i - this.get_init + 19);
+      }
+
+      else {
+        this.s[i - this.get_init - 1].on('click', (e, data) => {                                      /*click event listener*/
+          this.isClicked(data.info);
+        }, null, false, { info: new_data[this.spinner_txt_tracer - i] }
+        );
+        console.log(i - this.get_init - 1);
+      }
     }
+
     this.spinner_txt_tracer -= 2;
-    if (this.spinner_txt_tracer == 0) {
+    if (this.spinner_txt_tracer === 0) {
       this.spinner_txt_tracer = 20;
     }
 
@@ -166,15 +185,15 @@ class SpinnerWheel extends React.Component {
   }
 
 
-
   get_array = () => {
     let new_array = [];
+    let new_data = [];
     let span = this.len + this.array_trace;
     let index = null;
 
     if (!this.array_trace) {
       this.array_trace += this.get_init;
-      return this.segments.slice(0, this.get_init);
+      return [this.segments.slice(0, this.get_init), this.data.slice(0, this.get_init)];
     }
 
     for (let i = this.array_trace; i < span; i++) {
@@ -183,10 +202,11 @@ class SpinnerWheel extends React.Component {
         index = i - parseInt(i / this.segments.length) * this.segments.length;
       }
       new_array.push(this.segments[index]);
+      new_data.push(this.data[index])
     }
     this.array_trace += this.skip;
 
-    return new_array;
+    return [new_array, new_data];
   }
 
 

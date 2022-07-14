@@ -16,8 +16,13 @@
 }
 
 
-.positionMe{
+.positionCorner{
   position: absolute;
   right: 0px;
+  bottom: 0px;
+}
+.positionMiddle{
+  position: absolute;
+  /* right: 300px; */
   bottom: 0px;
 }
